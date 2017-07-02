@@ -19,9 +19,9 @@
 ######基本操作   
 
 1. 创建存储库
-* 在客户端克隆刚刚在浏览器中创建的库
-* 右键点击库名---open in explorer---编辑文本-客户端changes---蓝色为提交的change---点击变为绿色为不提交的change
-* 上传与同步到网页---右上角Sync  
+2. 在客户端克隆刚刚在浏览器中创建的库
+3. 右键点击库名---open in explorer---编辑文本-客户端changes---蓝色为提交的change---点击变为绿色为不提交的change
+4. 上传与同步到网页---右上角Sync  
 
 ######分支  
 
@@ -48,20 +48,20 @@
 ######创建仓库   
 
 * 初始化git仓库： git init命令
-2. 把文件添加到仓库： git add 文件名称.txt  （把文件修改添加到暂存区）
-3. 把文件提交到仓库： git commit -m"本次提交的说明"  （把暂存区的所有内容提交到当前分支）
-4. 掌握工作区的状态：git status
-5. 查看修改内容：git diff(工作区和暂存区的比较）
-6. 查看仓库文本内容：cat 文件名称.txt   
+* 把文件添加到仓库： git add 文件名称.txt  （把文件修改添加到暂存区）
+* 把文件提交到仓库： git commit -m"本次提交的说明"  （把暂存区的所有内容提交到当前分支）
+* 掌握工作区的状态：git status
+* 查看修改内容：git diff(工作区和暂存区的比较）
+* 查看仓库文本内容：cat 文件名称.txt   
 
 ######版本回退   
 
 * 查看修改历史：git log 
 * 简洁的查看修改历史：git log --pretty=oneline 
-3. HEAD:当前版本---HEAD^：上个版本---HEAD^^：上上个版本---前n个版本：HEAD~n
-4. 回退版本：git reset --hard HEAD^
-5. 找回版本：git reset --hard 版本号前几位
-6. 记录每一次命令：git reflog   
+* HEAD:当前版本---HEAD^：上个版本---HEAD^^：上上个版本---前n个版本：HEAD~n
+* 回退版本：git reset --hard HEAD^
+* 找回版本：git reset --hard 版本号前几位
+* 记录每一次命令：git reflog   
 
 ######版本库   
 
