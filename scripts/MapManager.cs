@@ -10,6 +10,7 @@ public class MapManager : MonoBehaviour {
     public GameObject[] foodArray;    //食物数组
     public GameObject[] EnemyArray;   //敌人数组
     public GameObject Exit;
+    public GameObject Player;
 
     public Gamemanager gamemanager;    //设定为public并且在Unity内实例化才可以使用
 
@@ -24,11 +25,12 @@ public class MapManager : MonoBehaviour {
 
     private List<Vector2> positionList = new List<Vector2>();   //位置列表
 
-    
+    Vector2 startPos = new Vector2(1, 1);
     
     void Start () {
         initmap();
-      
+        GameObject PLAYER= GameObject.Instantiate(Player, startPos, Quaternion.identity) as GameObject  ;   //在要把实例化出来的物体赋值给另一个GameObject时加as GameObject 
+        PLAYER.transform.SetParent(maphoder);
 	}
 	  
 	
@@ -96,7 +98,7 @@ public class MapManager : MonoBehaviour {
 
         //随机生成敌人
 
-        int enemyCount = Random.Range(0, gamemanager.level/2);
+        int enemyCount = Random.Range(1, gamemanager.level/2);
         /*for(int i=0;i<enemyCount;i++)
         {
             Vector2 pos = randomPosition();
