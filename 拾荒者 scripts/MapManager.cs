@@ -21,25 +21,14 @@ public class MapManager : MonoBehaviour {
     private int max = 8; //设置障碍物最大数目
 
    
-    private Transform maphoder;
+    private Transform maphoder;     //容纳创建的物体
 
     private List<Vector2> positionList = new List<Vector2>();   //位置列表
 
-    Vector2 startPos = new Vector2(1, 1);
-    
-    void Start () {
-        initmap();
-        GameObject PLAYER= GameObject.Instantiate(Player, startPos, Quaternion.identity) as GameObject  ;   //在要把实例化出来的物体赋值给另一个GameObject时加as GameObject 
-        PLAYER.transform.SetParent(maphoder);
-	}
-	  
-	
-	void Update () {
-		
-	}
+    Vector2 startPos = new Vector2(1, 1);         //玩家初始位置
     
     //初始化地图
-    private void initmap()
+    public  void initmap()
     {
         //创建围墙和地板
         maphoder = new GameObject("Map").transform;  //创建一个新的游戏物体Map并把transform组件赋给mapholder
@@ -57,70 +46,47 @@ public class MapManager : MonoBehaviour {
                     GameObject map=  GameObject.Instantiate(floorArray[index], new Vector3(x, y, 0), Quaternion.identity);
                     map.transform.SetParent(maphoder);
                  }
-      
+
+        //初始化玩家
+        GameObject PLAYER = GameObject.Instantiate(Player, startPos, Quaternion.identity) as GameObject;   //在要把实例化出来的物体赋值给另一个GameObject时加as GameObject 
+        PLAYER.transform.SetParent(maphoder);
 
         //创建障碍物和食物
 
         //遍历列表把位置赋值（需要调用randomPosition函数的代码要放在该段代码的后面）
-        for(int x=2;x<clos-2;x++)
+        for (int x=2;x<clos-2;x++)
             for(int y=2;y<rows-2;y++)
             {
                 positionList.Add(new Vector2(x, y));
             }
 
-        //退出功能
+        //创建出口
         Vector2 ExitPosition = new Vector2(clos - 2, rows - 2);
         GameObject exit = GameObject.Instantiate(Exit, ExitPosition, Quaternion.identity) as GameObject;
 
         //随机生成食物     
-        int foodCount = Random.Range(2, gamemanager.level * 2 + 1);
-        /*for (int i = 0; i < foodCount; i++)
-        {
-            GameObject food = RandomObject(foodArray);
-            Vector2 pos = randomPosition();
-            GameObject fo = GameObject.Instantiate(food, pos, Quaternion.identity) as GameObject;
-            fo.transform.SetParent(maphoder);
-        }*/
-        //优化代码
+        int foodCount = Random.Range(0, gamemanager.level / 2);       
         InstantiateItems(foodCount, foodArray);
 
         //选定随机位置并实例化障碍物
-
-        int count = Random.Range(min, max + 1);    //随机出障碍物数量
-        /*  for(int i=0;i<count;i++)
-        {
-            Vector2 pos=  randomPosition();
-            GameObject obstacle = RandomObject(Obstacle);     //随机选定障碍物
-            GameObject ob = GameObject.Instantiate(obstacle, pos, Quaternion.identity)as GameObject;   //实例化障碍物
-            ob.transform.SetParent(maphoder);
-        }*/
+        int count = Random.Range(min, max + 1);          
         InstantiateItems(count, Obstacle);
 
         //随机生成敌人
-
-        int enemyCount = Random.Range(1, gamemanager.level/2);
-        /*for(int i=0;i<enemyCount;i++)
-        {
-            Vector2 pos = randomPosition();
-            GameObject enemy = RandomObject(EnemyArray);
-            GameObject Enemy = GameObject.Instantiate(enemy, pos, Quaternion.identity);
-            Enemy.transform.SetParent(maphoder);
-        }*/
-        InstantiateItems(enemyCount, EnemyArray);
-
-      
+        int enemyCount = Random.Range(gamemanager .level /4, gamemanager.level/2);
+        InstantiateItems(enemyCount, EnemyArray);     
     }
   
       
-//随机生成位置
-private Vector2 randomPosition()              
+     //随机生成位置
+    private Vector2 randomPosition()              
     {
-
         int positionIndex = Random.Range(0, positionList.Count);     //在positionlist中生成随机索引
         Vector2 pos = positionList[positionIndex];                   //根据随机索引生成随机位置
         positionList.RemoveAt(positionIndex);                        //从列表中删除已经选定的随机位置
         return pos;
     }
+
     //随机生成物体
     private GameObject RandomObject(GameObject[] prefabs)
     {
@@ -139,4 +105,29 @@ private Vector2 randomPosition()
             prefab.transform.SetParent(maphoder);
         }
     }
+
+    /*for (int i = 0; i < foodCount; i++)
+       {
+           GameObject food = RandomObject(foodArray);
+           Vector2 pos = randomPosition();
+           GameObject fo = GameObject.Instantiate(food, pos, Quaternion.identity) as GameObject;
+           fo.transform.SetParent(maphoder);
+       }*/
+    
+
+    /*  for(int i=0;i<count;i++)
+       {
+           Vector2 pos=  randomPosition();
+           GameObject obstacle = RandomObject(Obstacle);     //随机选定障碍物
+           GameObject ob = GameObject.Instantiate(obstacle, pos, Quaternion.identity)as GameObject;   //实例化障碍物
+           ob.transform.SetParent(maphoder);
+       }*/
+
+    /*for(int i=0;i<enemyCount;i++)
+     {
+         Vector2 pos = randomPosition();
+         GameObject enemy = RandomObject(EnemyArray);
+         GameObject Enemy = GameObject.Instantiate(enemy, pos, Quaternion.identity);
+         Enemy.transform.SetParent(maphoder);
+     }*/
 }

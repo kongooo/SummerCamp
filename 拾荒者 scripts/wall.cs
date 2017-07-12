@@ -7,7 +7,7 @@ public class wall : MonoBehaviour {
     private int hp = 2;
     public Sprite damageSprite;
 
-	public void damage()
+	public void damage()             //砍两次墙后销毁
     {
         hp-=1;
         GetComponent<SpriteRenderer>().sprite = damageSprite;
