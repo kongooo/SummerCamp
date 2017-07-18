@@ -32,10 +32,10 @@ public class GridUI : MonoBehaviour,IPointerEnterHandler ,IPointerExitHandler
     //鼠标拖拽
     public static Action<Transform> OnLeftBeginDrag;           
     public static Action<Transform,Transform> OnLeftEndDrag;
-
+    
     public void OnBeginDrag(PointerEventData eventData)   //当鼠标开始拖拽
     {
-        if (eventData.button == PointerEventData.InputButton.Left)  //如果拖拽的是鼠标左键
+        if (eventData.button == PointerEventData.InputButton.Right)  //如果拖拽的是鼠标左键
         {
             if (OnLeftBeginDrag != null)                 //如果该事件被注册了
                 OnLeftBeginDrag(transform);
@@ -45,23 +45,21 @@ public class GridUI : MonoBehaviour,IPointerEnterHandler ,IPointerExitHandler
 
     public void OnEndDrag(PointerEventData eventData)       //拖拽结束时
     {
-        if (eventData.button == PointerEventData.InputButton.Left)  //如果拖拽的是鼠标左键
+        if (eventData.button == PointerEventData.InputButton.Right)  //如果拖拽的是鼠标左键
         {
             if (OnLeftEndDrag != null)
-            {                 
-                if (eventData.pointerEnter == null)      //若没有将物品放到UI上面
+            {
+                if (eventData.pointerEnter.transform==null)
                 {
-                    OnLeftEndDrag(transform, null);                 //返回一个空值
+                    OnLeftEndDrag(transform, null);
                 }
-                else                                      //若把物品拖拽到UI上面
-                {
-                    OnLeftEndDrag(transform,eventData.pointerEnter.transform);   //传递拖拽结束时的位置
-                }
+                else
+                OnLeftEndDrag(transform,eventData.pointerEnter.transform);   //传递拖拽结束时的位置               
             }
         }
     }
       
-    public void OnDrag(PointerEventData eventData)   //不实现这个借口无法实现拖拽功能
+    public void OnDrag(PointerEventData eventData)   //不实现这个接口无法实现拖拽功能
     {
         
     }

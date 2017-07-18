@@ -6,7 +6,16 @@ using UnityEngine.UI;
 
 public class BackpackManager : MonoBehaviour {
 
-    public Sprite[] BackPackSprites; 
+    public Sprite[] BackPackSprites;
+
+    public GameObject Room1;
+
+    
+
+    public RectTransform GridPanel;
+
+    public Camera MainCamera;
+
 
     private static BackpackManager instance;
     public static BackpackManager _instance      //单例模式
@@ -30,7 +39,9 @@ public class BackpackManager : MonoBehaviour {
     {
         //单例
         instance = this;
-
+        //生成初始房间
+        Instantiate(Room1, new Vector3(0.1f, 0, 0), Quaternion.identity);
+        
         //加载数据
         Load();
 
@@ -39,6 +50,13 @@ public class BackpackManager : MonoBehaviour {
         GridUI.OnExit += onExit;
         GridUI.OnLeftBeginDrag += GridUI_OnLeftBeginDrag;
         GridUI.OnLeftEndDrag += GridUI_OnLeftEndDrag;
+       
+    }
+
+
+    private void OnDisable()
+    {
+        
     }
 
 
@@ -47,7 +65,7 @@ public class BackpackManager : MonoBehaviour {
             //使提示框和拖拽时出现的物体跟随鼠标
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("Canvas").transform as RectTransform,
-                Input.mousePosition, null, out position);     //把鼠标的世界坐标转换为UI的相对坐标
+                Input.mousePosition,MainCamera , out position);     //把鼠标的屏幕坐标转换为UI的相对坐标
             if (isdrag)
             {
                 dragItemUI.show();
@@ -66,21 +84,25 @@ public class BackpackManager : MonoBehaviour {
     private void Load()       //模拟从数据库读取数据
     {
         
-        PackageItem Stick = new PackageItem(1, "stick", "一些小木棍", BackPackSprites[0]);
-        PackageItem Cloth = new PackageItem(2, "cloth", "笼子上挂着的碎布", BackPackSprites[1]);
-        PackageItem Brazier = new PackageItem(3, "brazier", "快熄灭的火盆", BackPackSprites[2]);
-        PackageItem NoFireStick = new PackageItem(4, "nofirestick", "未点燃的火把", BackPackSprites[3]);
-        PackageItem FireStick = new PackageItem(5, "firestick", "已经点燃的火把", BackPackSprites[4]);
-
-        //PackageItem WallFire = new PackageItem(6, "wallfire", "墙上的火把", BackPackSprites[5]);
-
+        PackageItem Stick = new PackageItem(1, "一些小木棍", BackPackSprites[0]);
+        PackageItem Cloth = new PackageItem(2, "笼子上挂着的碎布", BackPackSprites[1]);
+        PackageItem Brazier = new PackageItem(3, "快熄灭的火盆", BackPackSprites[2]);
+        PackageItem NoFireStick = new PackageItem(4, "未点燃的火把", BackPackSprites[3]);
+        PackageItem FireStick = new PackageItem(5, "已经点燃的火把", BackPackSprites[4]);
+        PackageItem FireWall = new PackageItem(6, "墙上的火把", BackPackSprites[5]);
+        PackageItem FireWallFire = new PackageItem(7, "点燃的墙上的火把", BackPackSprites[6]);
+        PackageItem Powder = new PackageItem(8, "一小撮火药", BackPackSprites[7]);
+        PackageItem Wick = new PackageItem(9, "油灯里面的灯芯", BackPackSprites[8]);
 
         PackageItemList.Add(1, Stick);
         PackageItemList.Add(2, Cloth);
         PackageItemList.Add(3, Brazier);
         PackageItemList.Add(4, NoFireStick);
         PackageItemList.Add(5, FireStick);
-
+        PackageItemList.Add(6, FireWall);
+        PackageItemList.Add(7, FireWallFire);
+        PackageItemList.Add(8, Powder);
+        PackageItemList.Add(9, Wick);
     }
 
     public void storeItem(int ItemID)      //根据ID存储物品和数据
@@ -127,16 +149,39 @@ public class BackpackManager : MonoBehaviour {
         dragItemUI.updateImage(item.PackItemImage);                //更新拖拽时出现物品图片
     }
 
+    //放弃把背包内物品拖拽到场景里了。。。还是试试点击吧
+    //private void GridUI_OnLeftDrag(Transform DragTransform)
+    //{
+    //    isdrag = true;
+    //    Vector2 position;
+    //    float leftPos,rightPos,upPos,downPos;
+    //    RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("Canvas").transform as RectTransform,
+    //            Input.mousePosition, MainCamera, out position);
+    //    rightPos = GridPanel.sizeDelta.x / 2;
+    //    leftPos = -GridPanel.sizeDelta.x / 2;
+    //    upPos = GridPanel.sizeDelta.y / 2;
+    //    downPos = -GridPanel.sizeDelta.y / 2;
+    //    Debug.Log(position);
+    //    if (position.x < leftPos || position.x > rightPos || position.y > upPos || position.y < downPos)
+    //    {
+    //        isOut = true;
+    //    }
+    //    if (isOut == true)
+    //    {
+    //        GameObject.Find("Canvas").GetComponent<Canvas>().planeDistance = 0;
+    //        isOut = false;
+
+    //    }
+
+    //}
+
+
     private void GridUI_OnLeftEndDrag(Transform GridTransStart, Transform GridTransEnd)             //当鼠标停止拖拽
     {
         isdrag = false;
         dragItemUI.hidden();                         //隐藏被拖拽时出现的物品
-
-        if (GridTransEnd == null)                      //直接扔掉
-        {
-            ItemModel.DeleteItem(GridTransStart.name);
-        }
-        else if (GridTransEnd.tag == "Grid")           //若拖到了另一个格子上
+        
+        if (GridTransEnd.tag == "Grid")           //若拖到了另一个格子上
         {
             if (GridTransEnd.childCount == 0)          //若为空格子
             {
@@ -150,16 +195,37 @@ public class BackpackManager : MonoBehaviour {
                 //获取拖拽开始和结束时的物品信息
                 Items ItemStart = ItemModel.GetItem(GridTransStart.name);
                 Items ItemEnd = ItemModel.GetItem(GridTransEnd.name);
-                //在开始结束的格子中分别创建结束开始的物品
-                CreatNewItem(ItemStart, GridTransEnd);
-                CreatNewItem(ItemEnd, GridTransStart);
+                //得到未点燃的火把
+                if ((ItemStart.ID==2&&ItemEnd.ID==1)||(ItemStart.ID==1&&ItemEnd.ID==2))
+                {
+                    CreatNewItem(PackageItemList[4], GridTransEnd);
+                }
+                //得到已点燃的火把
+                else if((ItemStart.ID == 4 && ItemEnd.ID == 3) || (ItemStart.ID == 3 && ItemEnd.ID == 4))
+                {
+                    CreatNewItem(PackageItemList[5], GridTransEnd);
+                }
+                //房间明亮度上升
+                else if ((ItemStart.ID == 5 && ItemEnd.ID == 6) || (ItemStart.ID == 6 && ItemEnd.ID == 5))
+                {
+                    GameObject.Find("大房间1(Clone)").SetActive(false);
+                    CreatNewItem(PackageItemList[7], GridTransEnd);
+                }
+                else
+                {
+                    //在开始结束的格子中分别创建结束开始的物品
+                    CreatNewItem(ItemStart, GridTransEnd);
+                    CreatNewItem(ItemEnd, GridTransStart);
+                }              
             }
-        }
-        else                                          //拖到其他地方，返回原位置
+        }       
+        else                       //拖到其他地方，返回原位置
         {
             Items item = ItemModel.GetItem(GridTransStart.name);
             CreatNewItem(item, GridTransStart);
         }
+       
+      
     }
 
     //根据物品名称和指定格子创建新的物品并存储数据
@@ -176,7 +242,7 @@ public class BackpackManager : MonoBehaviour {
         ItemGo.transform.localScale = Vector3.zero;
         ItemGo.transform.localScale = new Vector3(1, 1, 0);     //不设置默认为0
 
-        //存储随机出的Item的数据
+        //存储Item的数据
         ItemModel.storeData(Parent.name, newItem);
     }
 
