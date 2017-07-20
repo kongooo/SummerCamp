@@ -16,11 +16,11 @@ public class CameraManager : MonoBehaviour {
 	void Update ()            //更新相机坐标
     {
        nowPos = transform.position.x;   //记录当前位置
-        change = Input.GetAxisRaw("Horizontal") * 0.1f;   //记录输入值
+        change = Input.GetAxisRaw("Horizontal") * 0.15f;   //记录输入值
                
-        if (nowPos == 7 || nowPos == -6.8)   //到达边界时进行判断
+        if (nowPos == 7.3f || nowPos == -7)   //到达边界时进行判断
         {
-            if (nowPos == 7 && change > 0)
+            if (nowPos == 7.3f && change > 0)
             {
                 change = 0;
             }
@@ -28,7 +28,7 @@ public class CameraManager : MonoBehaviour {
             {
                 change = Input.GetAxisRaw("Horizontal") * 0.1f;
             }
-            if (nowPos == -6.8 && change < 0)
+            if (nowPos == -7 && change < 0)
             {
                 change = 0;
             }
@@ -41,7 +41,7 @@ public class CameraManager : MonoBehaviour {
         pos.x += change;                          //改变相机x轴坐标
         transform.position = pos;
         transform.position = new Vector3(                      //限制相机位置
-            Mathf.Clamp(transform.position.x, -6.8f, 7),
+            Mathf.Clamp(transform.position.x, -7f, 7.3f),
             0.0f,
             -10
             );

@@ -8,4 +8,10 @@ public class start : MonoBehaviour {
     {
         Application.LoadLevel("Animation");
     }
+    public void Eixt()
+    {
+        Application.Quit();
+    }
+        
+    
 }

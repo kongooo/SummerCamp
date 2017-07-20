@@ -9,6 +9,8 @@ public class hook : MonoBehaviour {
     public Transform[] hooks;
 
     float[] hookPosx;
+
+    bool ismove=true;
 	
 	void Awake () {
         StartCoroutine(OnMouseDown());
@@ -22,26 +24,35 @@ public class hook : MonoBehaviour {
         {
             hookPosx[i] = hooks[i].position.x;
         }
-        if ((hookPosx[0]>hookPosx[1])&&(hookPosx[1] > hookPosx[2]))
+        if (ismove)
         {
-            GameManager._Instance.three = 3;
+            if ((hookPosx[0] > hookPosx[1]) && (hookPosx[1] > hookPosx[2]))
+            {
+                ClickManager._Instance.Open.Play();
+                GameManager._Instance.three = 3;
+                ismove = false;
+            }
         }
+       
 
 	}
 
     private IEnumerator OnMouseDown()
     {
-        Vector3 screenSpace = CabinetCamera. WorldToScreenPoint(transform.position);
+       
+        //得到物体的屏幕坐标
+        Vector3 screenSpace = CabinetCamera. WorldToScreenPoint(transform.position);  
+        //获得物体和鼠标的世界坐标的差值（鼠标的屏幕坐标的z轴用物体的屏幕坐标的z轴）
         Vector3 offset = transform.position - CabinetCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z));
         while (Input.GetMouseButton(0))
         {
-            //得到现在鼠标的2维坐标系位置
+            //得到现在鼠标的三维屏幕坐标
             Vector3 curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenSpace.z);
-            //将当前鼠标的2维位置转换成3维位置，再加上鼠标的移动量
+            //将当前鼠标的屏幕坐标转换成世界坐标，再加上点击前鼠标和物体的世界坐标的差
             Vector3 curPosition = CabinetCamera.ScreenToWorldPoint(curScreenSpace) + offset;
-            //curPosition就是物体应该的移动向量赋给transform的position属性
+            
             transform.position = curPosition;
-            yield return new WaitForFixedUpdate(); //这个很重要，循环执行
+            yield return new WaitForFixedUpdate(); //循环执行
         }
     }
 

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Items  {
+public class Items  : MonoBehaviour
+{
     //父类   背包中物品拥有的属性(除ItemType外均为只读)
     public int ID { get; private set; }     //物品ID  private保护这个属性,防止被外部更改
     public string Name { get; private set; }

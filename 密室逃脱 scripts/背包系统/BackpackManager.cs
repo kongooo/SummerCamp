@@ -10,7 +10,7 @@ public class BackpackManager : MonoBehaviour {
 
     public GameObject Room1;
 
-    
+  
 
     public RectTransform GridPanel;
 
@@ -54,18 +54,13 @@ public class BackpackManager : MonoBehaviour {
     }
 
 
-    private void OnDisable()
-    {
-        
-    }
-
 
     private void Update()
     {      
             //使提示框和拖拽时出现的物体跟随鼠标
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(GameObject.Find("Canvas").transform as RectTransform,
-                Input.mousePosition,MainCamera , out position);     //把鼠标的屏幕坐标转换为UI的相对坐标
+                Input.mousePosition,ClickManager._Instance.FindEnableCamera(Camera.allCameras) , out position);     //把鼠标的屏幕坐标转换为UI的相对坐标
             if (isdrag)
             {
                 dragItemUI.show();
@@ -83,26 +78,30 @@ public class BackpackManager : MonoBehaviour {
     private Dictionary<int, Items> PackageItemList = new Dictionary<int, Items>();  //初始化Dictionary泛型集合类
     private void Load()       //模拟从数据库读取数据
     {
+
+        Items Stick = new Items(1, "一些小木棍", BackPackSprites[0]);
+        Items Cloth = new Items(2, "笼子上挂着的碎布", BackPackSprites[1]);
         
-        PackageItem Stick = new PackageItem(1, "一些小木棍", BackPackSprites[0]);
-        PackageItem Cloth = new PackageItem(2, "笼子上挂着的碎布", BackPackSprites[1]);
-        PackageItem Brazier = new PackageItem(3, "快熄灭的火盆", BackPackSprites[2]);
-        PackageItem NoFireStick = new PackageItem(4, "未点燃的火把", BackPackSprites[3]);
-        PackageItem FireStick = new PackageItem(5, "已经点燃的火把", BackPackSprites[4]);
-        PackageItem FireWall = new PackageItem(6, "墙上的火把", BackPackSprites[5]);
-        PackageItem FireWallFire = new PackageItem(7, "点燃的墙上的火把", BackPackSprites[6]);
-        PackageItem Powder = new PackageItem(8, "一小撮火药", BackPackSprites[7]);
-        PackageItem Wick = new PackageItem(9, "油灯里面的灯芯", BackPackSprites[8]);
+        Items NoFireStick = new Items(4, "未点燃的火把", BackPackSprites[3]);
+        Items FireStick = new Items(5, "已经点燃的火把", BackPackSprites[4]);
+        Items FireWall = new Items(6, "墙上的火把", BackPackSprites[5]);
+        Items FireWallFire = new Items(7, "点燃的墙上的火把", BackPackSprites[6]);
+        Items Powder = new Items(8, "一小撮火药", BackPackSprites[7]);
+        Items Wick = new Items(9, "油灯里面的灯芯", BackPackSprites[8]);
+        Items Ho = new Items(10, "一把放在地上的镐，看起来很锋利的样子", BackPackSprites[9]);
+        Items Rock = new Items(11, "箱子里的小石块", BackPackSprites[10]);
 
         PackageItemList.Add(1, Stick);
         PackageItemList.Add(2, Cloth);
-        PackageItemList.Add(3, Brazier);
+        
         PackageItemList.Add(4, NoFireStick);
         PackageItemList.Add(5, FireStick);
         PackageItemList.Add(6, FireWall);
         PackageItemList.Add(7, FireWallFire);
         PackageItemList.Add(8, Powder);
         PackageItemList.Add(9, Wick);
+        PackageItemList.Add(10, Ho);
+        PackageItemList.Add(11, Rock);
     }
 
     public void storeItem(int ItemID)      //根据ID存储物品和数据
@@ -125,11 +124,11 @@ public class BackpackManager : MonoBehaviour {
     //事件回调
     public void onEnter(Transform GridTrans)     //当鼠标进入
     {
+        Debug.Log("鼠标进入");
         Items item = ItemModel.GetItem(GridTrans.name);       //取得格子内对应物品
-        if (item == null)                                    //若该格子内没有物品
-            return;
         UI.updateToolTip(item.Name);                         //更新提示框内显示的文字
         isshow = true;
+        Debug.Log("显示文字");
     }
 
     public void onExit()                          //当鼠标离开
@@ -199,18 +198,9 @@ public class BackpackManager : MonoBehaviour {
                 if ((ItemStart.ID==2&&ItemEnd.ID==1)||(ItemStart.ID==1&&ItemEnd.ID==2))
                 {
                     CreatNewItem(PackageItemList[4], GridTransEnd);
+                    
                 }
-                //得到已点燃的火把
-                else if((ItemStart.ID == 4 && ItemEnd.ID == 3) || (ItemStart.ID == 3 && ItemEnd.ID == 4))
-                {
-                    CreatNewItem(PackageItemList[5], GridTransEnd);
-                }
-                //房间明亮度上升
-                else if ((ItemStart.ID == 5 && ItemEnd.ID == 6) || (ItemStart.ID == 6 && ItemEnd.ID == 5))
-                {
-                    GameObject.Find("大房间1(Clone)").SetActive(false);
-                    CreatNewItem(PackageItemList[7], GridTransEnd);
-                }
+                
                 else
                 {
                     //在开始结束的格子中分别创建结束开始的物品

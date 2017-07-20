@@ -35,7 +35,7 @@ public class GridUI : MonoBehaviour,IPointerEnterHandler ,IPointerExitHandler
     
     public void OnBeginDrag(PointerEventData eventData)   //当鼠标开始拖拽
     {
-        if (eventData.button == PointerEventData.InputButton.Right)  //如果拖拽的是鼠标左键
+        if (eventData.button == PointerEventData.InputButton.Left)  //如果拖拽的是鼠标左键
         {
             if (OnLeftBeginDrag != null)                 //如果该事件被注册了
                 OnLeftBeginDrag(transform);
@@ -45,7 +45,7 @@ public class GridUI : MonoBehaviour,IPointerEnterHandler ,IPointerExitHandler
 
     public void OnEndDrag(PointerEventData eventData)       //拖拽结束时
     {
-        if (eventData.button == PointerEventData.InputButton.Right)  //如果拖拽的是鼠标左键
+        if (eventData.button == PointerEventData.InputButton.Left)  //如果拖拽的是鼠标左键
         {
             if (OnLeftEndDrag != null)
             {
